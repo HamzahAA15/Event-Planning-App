@@ -1,5 +1,5 @@
 # How To Edit
-Step for editgit remote rm :
+Step for edit :
 ``` bash
 1. buka folder util/graph
 2. pilih file schema.graphqls
