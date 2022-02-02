@@ -29,13 +29,13 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 }
 
 func (r *mutationResolver) DeleteUser(ctx context.Context, id int) (*model.SuccessResponse, error) {
-	dataLogin := ctx.Value("EchoContextKey")
-	if dataLogin == nil {
-		return nil, errors.New("unauthorized")
-	} else {
-		convId := ctx.Value("EchoContextKey")
-		fmt.Println("id user", convId)
-	}
+	// dataLogin := ctx.Value("EchoContextKey")
+	// if dataLogin == nil {
+	// 	return nil, errors.New("unauthorized")
+	// } else {
+	// 	convId := ctx.Value("EchoContextKey")
+	// 	fmt.Println("id user", convId)
+	// }
 	fmt.Println("id = ", id)
 	err := r.userRepo.DeleteUser(id)
 	if err != nil {
@@ -48,13 +48,13 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, id int) (*model.Succe
 }
 
 func (r *mutationResolver) UpdateUser(ctx context.Context, id int, edit model.NewUser) (*model.SuccessResponse, error) {
-	dataLogin := ctx.Value("EchoContextKey")
-	if dataLogin == nil {
-		return nil, errors.New("unauthorized")
-	} else {
-		convId := ctx.Value("EchoContextKey")
-		fmt.Println("id user", convId)
-	}
+	// dataLogin := ctx.Value("EchoContextKey")
+	// if dataLogin == nil {
+	// 	return nil, errors.New("unauthorized")
+	// } else {
+	// 	convId := ctx.Value("EchoContextKey")
+	// 	fmt.Println("id user", convId)
+	// }
 	var user entities.User
 	user.Name = edit.Name
 	user.Email = edit.Email
@@ -82,53 +82,18 @@ func (r *queryResolver) Login(ctx context.Context, email string, password string
 	penampung.ID = &user.Id
 	penampung.Name = user.Name
 	penampung.Email = user.Email
-	penampung.Password = user.Password
 	hasil.User = &penampung
 	return &hasil, nil
 }
 
-func (r *queryResolver) GetUser(ctx context.Context) ([]*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
-// Mutation returns generated.MutationResolver implementation.
-func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
-
-// Query returns generated.QueryResolver implementation.
-func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
-
-type mutationResolver struct{ *Resolver }
-type queryResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *mutationResolver) RentBook(ctx context.Context, id *int) (*model.SuccessResponse, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-func (r *mutationResolver) ReturnBook(ctx context.Context, id *int) (*model.SuccessResponse, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-func (r *mutationResolver) CreateBook(ctx context.Context, input model.NewBook) (*model.SuccessResponse, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-func (r *mutationResolver) DeleteBook(ctx context.Context, id int) (*model.SuccessResponse, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-func (r *mutationResolver) UpdateBook(ctx context.Context, id int, edit model.NewBook) (*model.SuccessResponse, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-func (r *queryResolver) User(ctx context.Context) ([]*model.User, error) {
-	dataLogin := ctx.Value("EchoContextKey")
-	if dataLogin == nil {
-		return nil, errors.New("unauthorized")
-	} else {
-		convId := ctx.Value("EchoContextKey")
-		fmt.Println("id user", convId)
-	}
+func (r *queryResolver) GetUsers(ctx context.Context) ([]*model.User, error) {
+	// dataLogin := ctx.Value("EchoContextKey")
+	// if dataLogin == nil {
+	// 	return nil, errors.New("unauthorized")
+	// } else {
+	// 	convId := ctx.Value("EchoContextKey")
+	// 	fmt.Println("id user", convId)
+	// }
 
 	responseData, err := r.userRepo.GetUsers()
 
@@ -145,3 +110,12 @@ func (r *queryResolver) User(ctx context.Context) ([]*model.User, error) {
 
 	return userResponseData, nil
 }
+
+// Mutation returns generated.MutationResolver implementation.
+func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
+
+// Query returns generated.QueryResolver implementation.
+func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
+
+type mutationResolver struct{ *Resolver }
+type queryResolver struct{ *Resolver }

@@ -32,14 +32,9 @@ input NewUser {
   password: String!
 }
 
-input NewBook {
-  tittle: String!
-  author: String!
-  status: Boolean!
-}
-
 type Mutation {
   createUser(input: NewUser!): SuccessResponse!
   deleteUser(id: Int!): SuccessResponse!
   updateUser(id: Int!, edit: NewUser!): SuccessResponse!
 }
+scalar Time

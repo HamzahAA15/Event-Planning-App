@@ -57,8 +57,8 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		GetUser func(childComplexity int) int
-		Login   func(childComplexity int, email string, password string) int
+		GetUsers func(childComplexity int) int
+		Login    func(childComplexity int, email string, password string) int
 	}
 
 	SuccessResponse struct {
@@ -81,7 +81,7 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	Login(ctx context.Context, email string, password string) (*model.LoginResponse, error)
-	GetUser(ctx context.Context) ([]*model.User, error)
+	GetUsers(ctx context.Context) ([]*model.User, error)
 }
 
 type executableSchema struct {
@@ -163,12 +163,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.UpdateUser(childComplexity, args["id"].(int), args["edit"].(model.NewUser)), true
 
-	case "Query.getUser":
-		if e.complexity.Query.GetUser == nil {
+	case "Query.getUsers":
+		if e.complexity.Query.GetUsers == nil {
 			break
 		}
 
-		return e.complexity.Query.GetUser(childComplexity), true
+		return e.complexity.Query.GetUsers(childComplexity), true
 
 	case "Query.login":
 		if e.complexity.Query.Login == nil {
@@ -313,7 +313,7 @@ type LoginResponse {
 
 type Query {
   login(email: String!, password: String!): LoginResponse!
-  getUser: [User!]
+  getUsers: [User!]
 }
 
 input NewUser {
@@ -322,18 +322,12 @@ input NewUser {
   password: String!
 }
 
-input NewBook {
-  tittle: String!
-  author: String!
-  status: Boolean!
-}
-
 type Mutation {
   createUser(input: NewUser!): SuccessResponse!
   deleteUser(id: Int!): SuccessResponse!
   updateUser(id: Int!, edit: NewUser!): SuccessResponse!
 }
-`, BuiltIn: false},
+scalar Time`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
@@ -780,7 +774,7 @@ func (ec *executionContext) _Query_login(ctx context.Context, field graphql.Coll
 	return ec.marshalNLoginResponse2ᚖsircloᚋentitiesᚋmodelᚐLoginResponse(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_getUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_getUsers(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -798,7 +792,7 @@ func (ec *executionContext) _Query_getUser(ctx context.Context, field graphql.Co
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetUser(rctx)
+		return ec.resolvers.Query().GetUsers(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2212,45 +2206,6 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputNewBook(ctx context.Context, obj interface{}) (model.NewBook, error) {
-	var it model.NewBook
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
-		asMap[k] = v
-	}
-
-	for k, v := range asMap {
-		switch k {
-		case "tittle":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tittle"))
-			it.Tittle, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "author":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("author"))
-			it.Author, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "status":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("status"))
-			it.Status, err = ec.unmarshalNBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
 func (ec *executionContext) unmarshalInputNewUser(ctx context.Context, obj interface{}) (model.NewUser, error) {
 	var it model.NewUser
 	asMap := map[string]interface{}{}
@@ -2461,7 +2416,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
-		case "getUser":
+		case "getUsers":
 			field := field
 
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -2470,7 +2425,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getUser(ctx, field)
+				res = ec._Query_getUsers(ctx, field)
 				return res
 			}
 

@@ -16,14 +16,14 @@ func New(db *sql.DB) *UserRepository {
 
 func (ur *UserRepository) GetUsers() ([]entities.User, error) {
 	var users []entities.User
-	result, err := ur.db.Query("select id, name, email, password from users")
+	result, err := ur.db.Query("select id, name, email from users where deleted_at is null")
 	if err != nil {
 		return nil, err
 	}
 	defer result.Close()
 	for result.Next() {
 		var user entities.User
-		err := result.Scan(&user.Id, &user.Name, &user.Email, &user.Password)
+		err := result.Scan(&user.Id, &user.Name, &user.Email)
 		if err != nil {
 			return nil, fmt.Errorf("user not found")
 		}
@@ -33,7 +33,7 @@ func (ur *UserRepository) GetUsers() ([]entities.User, error) {
 }
 
 func (ur *UserRepository) DeleteUser(id int) error {
-	result, err := ur.db.Exec("delete from users where id = ?", id)
+	result, err := ur.db.Exec("UPDATE users SET deleted_at = now() where id = ?", id)
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func (ur *UserRepository) DeleteUser(id int) error {
 }
 
 func (ur *UserRepository) EditUser(user entities.User, id int) error {
-	result, err := ur.db.Exec("UPDATE users SET name= ?, email= ?, password= ? WHERE id = ?", user.Name, user.Email, user.Password, id)
+	result, err := ur.db.Exec("UPDATE users SET name= ?, email= ?, password= ?, updated_at = now() WHERE id = ?", user.Name, user.Email, user.Password, id)
 	if err != nil {
 		return err
 	}

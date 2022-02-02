@@ -9,12 +9,6 @@ type LoginResponse struct {
 	User    *User  `json:"User"`
 }
 
-type NewBook struct {
-	Tittle string `json:"tittle"`
-	Author string `json:"author"`
-	Status bool   `json:"status"`
-}
-
 type NewUser struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
