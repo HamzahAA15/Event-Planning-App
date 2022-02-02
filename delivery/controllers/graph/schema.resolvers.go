@@ -16,7 +16,8 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 	var user entities.User
 	user.Name = input.Name
 	user.Email = input.Email
-	user.Password = input.Password
+	password := input.Password
+	user.Password, _ = entities.HashPassword(password)
 	fmt.Println(user)
 	err := r.userRepo.CreateUser(user)
 	if err != nil {
@@ -70,7 +71,9 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id int, edit model.Ne
 }
 
 func (r *queryResolver) Login(ctx context.Context, email string, password string) (*model.LoginResponse, error) {
-	token, user, err := r.authRepo.Login(email, password)
+
+	hashedPass, _ := entities.HashPassword(password)
+	token, user, err := r.authRepo.Login(email, hashedPass)
 	if err != nil {
 		return nil, errors.New("yang bener inputnya cuk")
 	}
