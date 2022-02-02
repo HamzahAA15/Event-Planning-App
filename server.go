@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"sirclo/config"
 
 	"sirclo/delivery/controllers/graph"
@@ -31,8 +30,5 @@ func main() {
 	router.RegisterPath(e, srv)
 
 	// run server
-	address := fmt.Sprintf("localhost:%d", config.Port)
-	if err := e.Start(address); err != nil {
-		fmt.Errorf("shutting down the server")
-	}
+	e.Logger.Fatal(e.Start(":8080"))
 }

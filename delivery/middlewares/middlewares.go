@@ -34,7 +34,7 @@ func CreateToken(id int) (string, error) {
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
 	claims["id"] = id
-	claims["exp"] = time.Now().Add(time.Hour * 1).Unix()
+	claims["exp"] = time.Now().Add(time.Hour * 144).Unix()
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
