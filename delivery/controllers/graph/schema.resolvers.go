@@ -172,10 +172,10 @@ func (r *queryResolver) Login(ctx context.Context, email string, password string
 }
 
 func (r *queryResolver) GetUsers(ctx context.Context) ([]*model.User, error) {
-	// dataLogin := ctx.Value("EchoContextKey")
-	// if dataLogin == nil {
-	// 	return nil, errors.New("unauthorized")
-	// }
+	dataLogin := ctx.Value("EchoContextKey")
+	if dataLogin == nil {
+		return nil, errors.New("unauthorized")
+	}
 
 	responseData, err := r.userRepo.GetUsers()
 
@@ -205,14 +205,25 @@ func (r *queryResolver) GetUser(ctx context.Context, userID int) (*model.User, e
 }
 
 func (r *queryResolver) GetParticipants(ctx context.Context, eventID int) ([]*model.User, error) {
-	// dataLogin := ctx.Value("EchoContextKey")
-	// if dataLogin == nil {
-	// 	return nil, errors.New("unauthorized")
-	// } else {
-	// 	convId := ctx.Value("EchoContextKey")
-	// 	fmt.Println("id user", convId)
-	// }
-	panic(fmt.Errorf("not implemented"))
+	dataLogin := ctx.Value("EchoContextKey")
+	if dataLogin == nil {
+		return nil, errors.New("unauthorized")
+	}
+
+	responseData, err := r.participantRepo.GetParticipants(eventID)
+
+	if err != nil {
+		return nil, errors.New("not found")
+	}
+
+	userResponseData := []*model.User{}
+
+	for _, v := range responseData {
+		theId := int(v.Id)
+		userResponseData = append(userResponseData, &model.User{ID: &theId, Name: v.Name, Email: v.Email, Password: v.Password})
+	}
+
+	return userResponseData, nil
 }
 
 func (r *queryResolver) GetComments(ctx context.Context, eventID int) ([]*model.Comment, error) {
