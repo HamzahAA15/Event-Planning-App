@@ -57,6 +57,6 @@ type Mutation {
   editComment(commentId: Int!, eventId: Int!, comment: String!): SuccessResponse!
   deleteComment(commentId: Int!, eventId: Int!): SuccessResponse!
   createUser(input: NewUser!): SuccessResponse!
-  deleteUser(userId: Int!): SuccessResponse!
-  editUser(userId: Int!, edit: EditUser!): SuccessResponse!
+  deleteUser: SuccessResponse!
+  editUser(edit: EditUser!): SuccessResponse!
 }

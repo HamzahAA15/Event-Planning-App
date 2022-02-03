@@ -9,6 +9,7 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/labstack/echo/v4 v4.6.3
 	github.com/vektah/gqlparser/v2 v2.2.0
+	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
 )
 
 require (
@@ -24,7 +25,6 @@ require (
 	github.com/urfave/cli/v2 v2.3.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
-	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
 	golang.org/x/mod v0.4.2 // indirect
 	golang.org/x/net v0.0.0-20210913180222-943fd674d43e // indirect
 	golang.org/x/sys v0.0.0-20211103235746-7861aae1554b // indirect

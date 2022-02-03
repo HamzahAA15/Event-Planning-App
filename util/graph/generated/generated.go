@@ -62,9 +62,9 @@ type ComplexityRoot struct {
 		CreateUser        func(childComplexity int, input model.NewUser) int
 		DeleteComment     func(childComplexity int, commentID int, eventID int) int
 		DeleteParticipant func(childComplexity int, eventID int) int
-		DeleteUser        func(childComplexity int, userID int) int
+		DeleteUser        func(childComplexity int) int
 		EditComment       func(childComplexity int, commentID int, eventID int, comment string) int
-		EditUser          func(childComplexity int, userID int, edit model.EditUser) int
+		EditUser          func(childComplexity int, edit model.EditUser) int
 	}
 
 	Query struct {
@@ -97,8 +97,8 @@ type MutationResolver interface {
 	EditComment(ctx context.Context, commentID int, eventID int, comment string) (*model.SuccessResponse, error)
 	DeleteComment(ctx context.Context, commentID int, eventID int) (*model.SuccessResponse, error)
 	CreateUser(ctx context.Context, input model.NewUser) (*model.SuccessResponse, error)
-	DeleteUser(ctx context.Context, userID int) (*model.SuccessResponse, error)
-	EditUser(ctx context.Context, userID int, edit model.EditUser) (*model.SuccessResponse, error)
+	DeleteUser(ctx context.Context) (*model.SuccessResponse, error)
+	EditUser(ctx context.Context, edit model.EditUser) (*model.SuccessResponse, error)
 }
 type QueryResolver interface {
 	Login(ctx context.Context, email string, password string) (*model.LoginResponse, error)
@@ -238,12 +238,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_Mutation_deleteUser_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.DeleteUser(childComplexity, args["userId"].(int)), true
+		return e.complexity.Mutation.DeleteUser(childComplexity), true
 
 	case "Mutation.editComment":
 		if e.complexity.Mutation.EditComment == nil {
@@ -267,7 +262,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.EditUser(childComplexity, args["userId"].(int), args["edit"].(model.EditUser)), true
+		return e.complexity.Mutation.EditUser(childComplexity, args["edit"].(model.EditUser)), true
 
 	case "Query.getComment":
 		if e.complexity.Query.GetComment == nil {
@@ -508,8 +503,8 @@ type Mutation {
   editComment(commentId: Int!, eventId: Int!, comment: String!): SuccessResponse!
   deleteComment(commentId: Int!, eventId: Int!): SuccessResponse!
   createUser(input: NewUser!): SuccessResponse!
-  deleteUser(userId: Int!): SuccessResponse!
-  editUser(userId: Int!, edit: EditUser!): SuccessResponse!
+  deleteUser: SuccessResponse!
+  editUser(edit: EditUser!): SuccessResponse!
 }
 `, BuiltIn: false},
 }
@@ -612,21 +607,6 @@ func (ec *executionContext) field_Mutation_deleteParticipant_args(ctx context.Co
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_deleteUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 int
-	if tmp, ok := rawArgs["userId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["userId"] = arg0
-	return args, nil
-}
-
 func (ec *executionContext) field_Mutation_editComment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -663,24 +643,15 @@ func (ec *executionContext) field_Mutation_editComment_args(ctx context.Context,
 func (ec *executionContext) field_Mutation_editUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 int
-	if tmp, ok := rawArgs["userId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["userId"] = arg0
-	var arg1 model.EditUser
+	var arg0 model.EditUser
 	if tmp, ok := rawArgs["edit"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("edit"))
-		arg1, err = ec.unmarshalNEditUser2sircloᚋentitiesᚋmodelᚐEditUser(ctx, tmp)
+		arg0, err = ec.unmarshalNEditUser2sircloᚋentitiesᚋmodelᚐEditUser(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["edit"] = arg1
+	args["edit"] = arg0
 	return args, nil
 }
 
@@ -1334,16 +1305,9 @@ func (ec *executionContext) _Mutation_deleteUser(ctx context.Context, field grap
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_deleteUser_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteUser(rctx, args["userId"].(int))
+		return ec.resolvers.Mutation().DeleteUser(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1385,7 +1349,7 @@ func (ec *executionContext) _Mutation_editUser(ctx context.Context, field graphq
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().EditUser(rctx, args["userId"].(int), args["edit"].(model.EditUser))
+		return ec.resolvers.Mutation().EditUser(rctx, args["edit"].(model.EditUser))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

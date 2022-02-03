@@ -102,8 +102,9 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 	user.Name = input.Name
 	user.Email = input.Email
 	password := input.Password
-	user.Password, _ = entities.HashPassword(password)
+	user.Password, _ = entities.EncryptPassword(password)
 	fmt.Println(user)
+	// ini function buat bikin user dengan sebuah inputan entitites.User
 	err := r.userRepo.CreateUser(user)
 	if err != nil {
 		return nil, err
@@ -114,14 +115,12 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 	return &response, nil
 }
 
-func (r *mutationResolver) DeleteUser(ctx context.Context, userID int) (*model.SuccessResponse, error) {
-	// dataLogin := ctx.Value("EchoContextKey")
-	// if dataLogin == nil {
-	// 	return nil, errors.New("unauthorized")
-	// } else {
-	// 	convId := ctx.Value("EchoContextKey")
-	// 	fmt.Println("id user", convId)
-	// }
+func (r *mutationResolver) DeleteUser(ctx context.Context) (*model.SuccessResponse, error) {
+	dataLogin := ctx.Value("EchoContextKey")
+	if dataLogin == nil {
+		return nil, errors.New("unauthorized")
+	}
+	userID := dataLogin.(int)
 	fmt.Println("id = ", userID)
 	err := r.userRepo.DeleteUser(userID)
 	if err != nil {
@@ -133,15 +132,17 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, userID int) (*model.S
 	return &response, nil
 }
 
-func (r *mutationResolver) EditUser(ctx context.Context, userID int, edit model.EditUser) (*model.SuccessResponse, error) {
-	// dataLogin := ctx.Value("EchoContextKey")
-	// if dataLogin == nil {
-	// 	return nil, errors.New("unauthorized")
-	// }
+func (r *mutationResolver) EditUser(ctx context.Context, edit model.EditUser) (*model.SuccessResponse, error) {
+	dataLogin := ctx.Value("EchoContextKey")
+	if dataLogin == nil {
+		return nil, errors.New("unauthorized")
+	}
+	userID := dataLogin.(int)
 	var user entities.User
 	user.Name = *edit.Name
 	user.Email = *edit.Email
-	user.Password = *edit.Password
+	user.Password, _ = entities.EncryptPassword(*edit.Password)
+
 	err := r.userRepo.EditUser(user, userID)
 	if err != nil {
 		return nil, err
@@ -153,9 +154,15 @@ func (r *mutationResolver) EditUser(ctx context.Context, userID int, edit model.
 }
 
 func (r *queryResolver) Login(ctx context.Context, email string, password string) (*model.LoginResponse, error) {
-
-	hashedPass, _ := entities.HashPassword(password)
-	token, user, err := r.authRepo.Login(email, hashedPass)
+	hashedPassword, err_checkdata := r.authRepo.GetEncryptPassword(email)
+	if err_checkdata != nil {
+		return nil, errors.New("email tidak ditemukan")
+	}
+	err_compare := entities.ComparePassword(hashedPassword, password)
+	if err_compare != nil {
+		return nil, errors.New("password salah")
+	}
+	token, user, err := r.authRepo.Login(email)
 	if err != nil {
 		return nil, errors.New("yang bener inputnya cuk")
 	}

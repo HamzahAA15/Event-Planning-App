@@ -1,7 +1,10 @@
 package auth
 
-import "sirclo/entities"
+import (
+	"sirclo/entities"
+)
 
 type Auth interface {
-	Login(email string, password string) (string, entities.User, error)
+	Login(email string) (string, entities.User, error)
+	GetEncryptPassword(email string) (string, error)
 }
