@@ -36,7 +36,7 @@ func initConfig() *AppConfig {
 	var defaultConfig AppConfig
 	defaultConfig.Port = 8080
 	defaultConfig.Database.Driver = "mysql"
-	defaultConfig.Database.Name = "graphql_raw"
+	defaultConfig.Database.Name = "graphql_group_project"
 	defaultConfig.Database.Address = "localhost" //172.17.0.1
 	defaultConfig.Database.Port = 3306
 	defaultConfig.Database.Username = "root"

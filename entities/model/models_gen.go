@@ -2,6 +2,19 @@
 
 package model
 
+type Comment struct {
+	ID      int    `json:"id"`
+	Comment string `json:"comment"`
+	User    *User  `json:"user"`
+}
+
+type EditUser struct {
+	Name     *string `json:"name"`
+	Email    *string `json:"email"`
+	Password *string `json:"password"`
+	Image    *string `json:"image"`
+}
+
 type LoginResponse struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
@@ -21,8 +34,9 @@ type SuccessResponse struct {
 }
 
 type User struct {
-	ID       *int   `json:"id"`
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	ID       *int    `json:"id"`
+	Name     string  `json:"name"`
+	Email    string  `json:"email"`
+	Password string  `json:"password"`
+	Image    *string `json:"image"`
 }

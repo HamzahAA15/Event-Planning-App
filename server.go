@@ -6,6 +6,8 @@ import (
 	"sirclo/delivery/controllers/graph"
 	"sirclo/delivery/router"
 	_authRepo "sirclo/repository/auth"
+	_commentRepo "sirclo/repository/comment"
+	_participantRepo "sirclo/repository/participant"
 	_userRepo "sirclo/repository/user"
 	"sirclo/util"
 
@@ -23,9 +25,11 @@ func main() {
 	// authRepo := auth.New()
 	userRepo := _userRepo.New(db)
 	authRepo := _authRepo.New(db)
+	commentRepo := _commentRepo.New(db)
+	participantRepo := _participantRepo.New(db)
 	//create echo http
 	e := echo.New()
-	client := graph.NewResolver(userRepo, authRepo)
+	client := graph.NewResolver(userRepo, authRepo, commentRepo, participantRepo)
 	srv := router.NewGraphQLServer(client)
 	router.RegisterPath(e, srv)
 

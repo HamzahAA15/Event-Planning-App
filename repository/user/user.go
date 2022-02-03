@@ -45,7 +45,7 @@ func (ur *UserRepository) DeleteUser(id int) error {
 }
 
 func (ur *UserRepository) EditUser(user entities.User, id int) error {
-	result, err := ur.db.Exec("UPDATE users SET name= ?, email= ?, password= ?, updated_at = now() WHERE id = ?", user.Name, user.Email, user.Password, id)
+	result, err := ur.db.Exec("UPDATE users SET name= ?, email= ?, password= ?, image_url = ?, updated_at = now() WHERE id = ?", user.Name, user.Email, user.Password, user.ImageUrl, id)
 	if err != nil {
 		return err
 	}

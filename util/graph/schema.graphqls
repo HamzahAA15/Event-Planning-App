@@ -12,6 +12,7 @@ type User {
   name: String!
   email: String!
   password: String!
+  image: String
 }
 
 type LoginResponse {
@@ -21,9 +22,19 @@ type LoginResponse {
   User: User!
 }
 
+type Comment {
+  id: Int!
+  comment: String!
+  user: User!
+}
+
 type Query {
   login(email: String!, password: String!): LoginResponse!
   getUsers: [User!]
+  getUser(userId: Int!): User!
+  getParticipants(eventId: Int!): [User!]
+  getComments(eventId: Int!): [Comment!]
+  getComment(commentId: Int!): Comment!
 }
 
 input NewUser {
@@ -32,9 +43,20 @@ input NewUser {
   password: String!
 }
 
-type Mutation {
-  createUser(input: NewUser!): SuccessResponse!
-  deleteUser(id: Int!): SuccessResponse!
-  updateUser(id: Int!, edit: NewUser!): SuccessResponse!
+input EditUser {
+  name: String
+  email: String
+  password: String
+  image: String
 }
-scalar Time
+
+type Mutation {
+  createParticipant(eventId: Int!): SuccessResponse!
+  deleteParticipant(eventId: Int!): SuccessResponse!
+  createComment(eventId: Int!, comment: String!): SuccessResponse!
+  editComment(commentId: Int!, eventId: Int!, comment: String!): SuccessResponse!
+  deleteComment(commentId: Int!, eventId: Int!): SuccessResponse!
+  createUser(input: NewUser!): SuccessResponse!
+  deleteUser(userId: Int!): SuccessResponse!
+  editUser(userId: Int!, edit: EditUser!): SuccessResponse!
+}

@@ -8,6 +8,7 @@ type User struct {
 	Name     string `json:"name" form:"name"`
 	Email    string `json:"email" form:"email"`
 	Password string `json:"password" form:"password"`
+	ImageUrl string `json:"image_url" form:"image_url"`
 }
 
 func HashPassword(password string) (string, error) {
