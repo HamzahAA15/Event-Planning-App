@@ -18,7 +18,7 @@ func New(db *sql.DB) *AuthRepository {
 func (a *AuthRepository) Login(email string, password string) (string, entities.User, error) {
 	var user entities.User
 	// input email = asd, password = 123
-	result, err := a.db.Query("select * from users where email = ? and password = ?", email, password)
+	result, err := a.db.Query("select id, name, email, password from users where email = ? and password = ?", email, password)
 	if err != nil {
 		fmt.Println(err)
 		return "", user, err

@@ -12,6 +12,91 @@ import (
 	"sirclo/util/graph/generated"
 )
 
+func (r *mutationResolver) CreateParticipant(ctx context.Context, eventID int) (*model.SuccessResponse, error) {
+	// dataLogin := ctx.Value("EchoContextKey")
+	// if dataLogin == nil {
+	// 	return nil, errors.New("unauthorized")
+	// } else {
+	// 	convId := ctx.Value("EchoContextKey")
+	// 	fmt.Println("id user", convId)
+	// }
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *mutationResolver) DeleteParticipant(ctx context.Context, eventID int) (*model.SuccessResponse, error) {
+	// dataLogin := ctx.Value("EchoContextKey")
+	// if dataLogin == nil {
+	// 	return nil, errors.New("unauthorized")
+	// } else {
+	// 	convId := ctx.Value("EchoContextKey")
+	// 	fmt.Println("id user", convId)
+	// }
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *mutationResolver) CreateComment(ctx context.Context, eventID int, comment string) (*model.SuccessResponse, error) {
+	dataLogin := ctx.Value("EchoContextKey")
+	if dataLogin == nil {
+		return nil, errors.New("unauthorized")
+	}
+	loginId := dataLogin.(int)
+	var commentData entities.Comment
+	commentData.UserId = loginId
+	commentData.EventId = eventID
+	commentData.Comment = comment
+
+	err := r.commentRepo.CreateComment(commentData)
+	if err != nil {
+		return nil, err
+	}
+
+	var response model.SuccessResponse
+	response.Code = 200
+	response.Message = "berhasil membuat comment"
+	return &response, nil
+}
+
+func (r *mutationResolver) EditComment(ctx context.Context, commentID int, eventID int, comment string) (*model.SuccessResponse, error) {
+	dataLogin := ctx.Value("EchoContextKey")
+	if dataLogin == nil {
+		return nil, errors.New("unauthorized")
+	}
+	loginId := dataLogin.(int)
+	var editComment entities.Comment
+	editComment.Id = commentID
+	editComment.UserId = loginId
+	editComment.EventId = eventID
+	editComment.Comment = comment
+
+	err := r.commentRepo.EditComment(editComment)
+	if err != nil {
+		return nil, err
+	}
+
+	var response model.SuccessResponse
+	response.Code = 200
+	response.Message = "berhasil merubah comment"
+	return &response, nil
+}
+
+func (r *mutationResolver) DeleteComment(ctx context.Context, commentID int, eventID int) (*model.SuccessResponse, error) {
+	dataLogin := ctx.Value("EchoContextKey")
+	if dataLogin == nil {
+		return nil, errors.New("unauthorized")
+	} else {
+		convId := ctx.Value("EchoContextKey")
+		fmt.Println("id user", convId)
+	}
+	err := r.commentRepo.DeleteComment(eventID, commentID)
+	if err != nil {
+		return nil, fmt.Errorf("user not found")
+	}
+	var response model.SuccessResponse
+	response.Code = 200
+	response.Message = "berhasil menghapus comment"
+	return &response, nil
+}
+
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.SuccessResponse, error) {
 	var user entities.User
 	user.Name = input.Name
@@ -28,7 +113,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 	return &response, nil
 }
 
-func (r *mutationResolver) DeleteUser(ctx context.Context, id int) (*model.SuccessResponse, error) {
+func (r *mutationResolver) DeleteUser(ctx context.Context, userID int) (*model.SuccessResponse, error) {
 	// dataLogin := ctx.Value("EchoContextKey")
 	// if dataLogin == nil {
 	// 	return nil, errors.New("unauthorized")
@@ -36,8 +121,8 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, id int) (*model.Succe
 	// 	convId := ctx.Value("EchoContextKey")
 	// 	fmt.Println("id user", convId)
 	// }
-	fmt.Println("id = ", id)
-	err := r.userRepo.DeleteUser(id)
+	fmt.Println("id = ", userID)
+	err := r.userRepo.DeleteUser(userID)
 	if err != nil {
 		return nil, fmt.Errorf("user not found")
 	}
@@ -47,19 +132,16 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, id int) (*model.Succe
 	return &response, nil
 }
 
-func (r *mutationResolver) UpdateUser(ctx context.Context, id int, edit model.NewUser) (*model.SuccessResponse, error) {
+func (r *mutationResolver) EditUser(ctx context.Context, userID int, edit model.EditUser) (*model.SuccessResponse, error) {
 	// dataLogin := ctx.Value("EchoContextKey")
 	// if dataLogin == nil {
 	// 	return nil, errors.New("unauthorized")
-	// } else {
-	// 	convId := ctx.Value("EchoContextKey")
-	// 	fmt.Println("id user", convId)
 	// }
 	var user entities.User
-	user.Name = edit.Name
-	user.Email = edit.Email
-	user.Password = edit.Password
-	err := r.userRepo.EditUser(user, id)
+	user.Name = *edit.Name
+	user.Email = *edit.Email
+	user.Password = *edit.Password
+	err := r.userRepo.EditUser(user, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -90,9 +172,6 @@ func (r *queryResolver) GetUsers(ctx context.Context) ([]*model.User, error) {
 	// dataLogin := ctx.Value("EchoContextKey")
 	// if dataLogin == nil {
 	// 	return nil, errors.New("unauthorized")
-	// } else {
-	// 	convId := ctx.Value("EchoContextKey")
-	// 	fmt.Println("id user", convId)
 	// }
 
 	responseData, err := r.userRepo.GetUsers()
@@ -109,6 +188,64 @@ func (r *queryResolver) GetUsers(ctx context.Context) ([]*model.User, error) {
 	}
 
 	return userResponseData, nil
+}
+
+func (r *queryResolver) GetUser(ctx context.Context, userID int) (*model.User, error) {
+	// dataLogin := ctx.Value("EchoContextKey")
+	// if dataLogin == nil {
+	// 	return nil, errors.New("unauthorized")
+	// } else {
+	// 	convId := ctx.Value("EchoContextKey")
+	// 	fmt.Println("id user", convId)
+	// }
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) GetParticipants(ctx context.Context, eventID int) ([]*model.User, error) {
+	// dataLogin := ctx.Value("EchoContextKey")
+	// if dataLogin == nil {
+	// 	return nil, errors.New("unauthorized")
+	// } else {
+	// 	convId := ctx.Value("EchoContextKey")
+	// 	fmt.Println("id user", convId)
+	// }
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) GetComments(ctx context.Context, eventID int) ([]*model.Comment, error) {
+	responseData, err := r.commentRepo.GetComments(eventID)
+	if err != nil {
+		return nil, err
+	}
+
+	commentResponseData := []*model.Comment{}
+
+	for _, v := range responseData {
+		var user model.User
+		user.ID = &v.User.Id
+		user.Name = v.User.Name
+		user.Email = v.User.Email
+		commentResponseData = append(commentResponseData, &model.Comment{ID: v.Id, User: &user, Comment: v.Comment})
+	}
+	return commentResponseData, nil
+}
+
+func (r *queryResolver) GetComment(ctx context.Context, commentID int) (*model.Comment, error) {
+	responseData, err := r.commentRepo.GetComment(commentID)
+	if err != nil {
+		return nil, err
+	}
+
+	var commentResponseData model.Comment
+	commentResponseData.ID = responseData.Id
+	commentResponseData.Comment = responseData.Comment
+	var user model.User
+	user.ID = &responseData.User.Id
+	user.Name = responseData.User.Name
+	user.Email = responseData.User.Email
+	commentResponseData.User = &user
+
+	return &commentResponseData, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
