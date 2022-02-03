@@ -194,7 +194,7 @@ func (r *queryResolver) GetUsers(ctx context.Context) ([]*model.User, error) {
 
 	for _, v := range responseData {
 		theId := int(v.Id)
-		userResponseData = append(userResponseData, &model.User{ID: &theId, Name: v.Name, Email: v.Email, Password: v.Password})
+		userResponseData = append(userResponseData, &model.User{ID: &theId, Name: v.Name, Email: v.Email, Image: &v.ImageUrl})
 	}
 
 	return userResponseData, nil
@@ -227,7 +227,7 @@ func (r *queryResolver) GetParticipants(ctx context.Context, eventID int) ([]*mo
 
 	for _, v := range responseData {
 		theId := int(v.Id)
-		userResponseData = append(userResponseData, &model.User{ID: &theId, Name: v.Name, Email: v.Email, Password: v.Password})
+		userResponseData = append(userResponseData, &model.User{ID: &theId, Name: v.Name, Email: v.Email, Image: &v.ImageUrl})
 	}
 
 	return userResponseData, nil

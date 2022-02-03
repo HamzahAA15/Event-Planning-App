@@ -26,7 +26,7 @@ func (pr *ParticipantRepository) GetParticipants(eventId int) ([]entities.User, 
 	defer result.Close()
 	for result.Next() {
 		var user entities.User
-		err := result.Scan(&user.Id, &user.Name, &user.Email)
+		err := result.Scan(&user.Id, &user.Name, &user.Email, &user.ImageUrl)
 		if err != nil {
 			return nil, fmt.Errorf("user not found")
 		}
