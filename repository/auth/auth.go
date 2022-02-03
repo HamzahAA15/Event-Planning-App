@@ -43,7 +43,7 @@ func (a *AuthRepository) Login(email string) (string, entities.User, error) {
 func (a *AuthRepository) GetEncryptPassword(email string) (string, error) {
 	var password string
 	// input email = asd, password = 123
-	result, err := a.db.Query("select password from users where email = ?", email)
+	result, err := a.db.Query("select password from users where email = ? AND deleted_at IS null", email)
 	if err != nil {
 		fmt.Println(err)
 		return "", err

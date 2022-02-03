@@ -115,14 +115,12 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 	return &response, nil
 }
 
-func (r *mutationResolver) DeleteUser(ctx context.Context, userID int) (*model.SuccessResponse, error) {
-	// dataLogin := ctx.Value("EchoContextKey")
-	// if dataLogin == nil {
-	// 	return nil, errors.New("unauthorized")
-	// } else {
-	// 	convId := ctx.Value("EchoContextKey")
-	// 	fmt.Println("id user", convId)
-	// }
+func (r *mutationResolver) DeleteUser(ctx context.Context) (*model.SuccessResponse, error) {
+	dataLogin := ctx.Value("EchoContextKey")
+	if dataLogin == nil {
+		return nil, errors.New("unauthorized")
+	}
+	userID := dataLogin.(int)
 	fmt.Println("id = ", userID)
 	err := r.userRepo.DeleteUser(userID)
 	if err != nil {
@@ -134,11 +132,12 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, userID int) (*model.S
 	return &response, nil
 }
 
-func (r *mutationResolver) EditUser(ctx context.Context, userID int, edit model.EditUser) (*model.SuccessResponse, error) {
-	// dataLogin := ctx.Value("EchoContextKey")
-	// if dataLogin == nil {
-	// 	return nil, errors.New("unauthorized")
-	// }
+func (r *mutationResolver) EditUser(ctx context.Context, edit model.EditUser) (*model.SuccessResponse, error) {
+	dataLogin := ctx.Value("EchoContextKey")
+	if dataLogin == nil {
+		return nil, errors.New("unauthorized")
+	}
+	userID := dataLogin.(int)
 	var user entities.User
 	user.Name = *edit.Name
 	user.Email = *edit.Email
@@ -155,7 +154,6 @@ func (r *mutationResolver) EditUser(ctx context.Context, userID int, edit model.
 }
 
 func (r *queryResolver) Login(ctx context.Context, email string, password string) (*model.LoginResponse, error) {
-
 	hashedPassword, err_checkdata := r.authRepo.GetEncryptPassword(email)
 	if err_checkdata != nil {
 		return nil, errors.New("email tidak ditemukan")
