@@ -36,7 +36,7 @@ func (pr *ParticipantRepository) GetParticipants(eventId int) ([]entities.User, 
 }
 
 func (pr *ParticipantRepository) CreateParticipant(eventId int, loginId int) error {
-	result_check, _ := pr.db.Query("select id from participants where event_id = ? AND user_id = ?", eventId, loginId)
+	result_check, _ := pr.db.Query("select id from participants where event_id = ? AND user_id = ? AND deleted_at IS null", eventId, loginId)
 	for result_check.Next() {
 		return fmt.Errorf("anda sudah terdaftar")
 	}
@@ -52,7 +52,7 @@ func (pr *ParticipantRepository) CreateParticipant(eventId int, loginId int) err
 }
 
 func (pr *ParticipantRepository) DeleteParticipant(eventId int, loginId int) error {
-	result, err := pr.db.Exec("UPDATE participants SET deleted_at = now() where event_id = ? AND user_id = ?", eventId, loginId)
+	result, err := pr.db.Exec("UPDATE participants SET deleted_at = now() where event_id = ? AND user_id = ? AND deleted_at IS null", eventId, loginId)
 	if err != nil {
 		return err
 	}

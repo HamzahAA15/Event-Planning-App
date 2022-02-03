@@ -68,7 +68,7 @@ func (cr *CommentRepository) CreateComment(comment entities.Comment) error {
 }
 
 func (cr *CommentRepository) EditComment(comment entities.Comment) error {
-	result, err := cr.db.Exec("UPDATE comments SET comment = ?, updated_at = now() WHERE id = ? AND event_id = ?", comment.Comment, comment.Id, comment.EventId)
+	result, err := cr.db.Exec("UPDATE comments SET comment = ?, updated_at = now() WHERE id = ? AND event_id = ? AND user_id = ? AND deleted_at IS null", comment.Comment, comment.Id, comment.EventId, comment.UserId)
 	if err != nil {
 		return err
 	}
@@ -79,8 +79,8 @@ func (cr *CommentRepository) EditComment(comment entities.Comment) error {
 	return nil
 }
 
-func (cr *CommentRepository) DeleteComment(eventId int, commentId int) error {
-	result, err := cr.db.Exec("UPDATE comments SET deleted_at = now() where event_id = ? AND id = ?", eventId, commentId)
+func (cr *CommentRepository) DeleteComment(eventId int, commentId int, loginId int) error {
+	result, err := cr.db.Exec("UPDATE comments SET deleted_at = now() where event_id = ? AND id = ? AND user_id = ? AND deleted_at IS null", eventId, commentId, loginId)
 	if err != nil {
 		return err
 	}

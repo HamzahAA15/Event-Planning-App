@@ -33,7 +33,7 @@ func (ur *UserRepository) GetUsers() ([]entities.User, error) {
 }
 
 func (ur *UserRepository) DeleteUser(id int) error {
-	result, err := ur.db.Exec("UPDATE users SET deleted_at = now() where id = ?", id)
+	result, err := ur.db.Exec("UPDATE users SET deleted_at = now() where id = ? AND deleted_at IS null", id)
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func (ur *UserRepository) DeleteUser(id int) error {
 }
 
 func (ur *UserRepository) EditUser(user entities.User, id int) error {
-	result, err := ur.db.Exec("UPDATE users SET name= ?, email= ?, password= ?, image_url = ?, updated_at = now() WHERE id = ?", user.Name, user.Email, user.Password, user.ImageUrl, id)
+	result, err := ur.db.Exec("UPDATE users SET name= ?, email= ?, password= ?, image_url = ?, updated_at = now() WHERE id = ? AND deleted_at IS null", user.Name, user.Email, user.Password, user.ImageUrl, id)
 	if err != nil {
 		return err
 	}

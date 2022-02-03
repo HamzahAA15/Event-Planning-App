@@ -13,25 +13,37 @@ import (
 )
 
 func (r *mutationResolver) CreateParticipant(ctx context.Context, eventID int) (*model.SuccessResponse, error) {
-	// dataLogin := ctx.Value("EchoContextKey")
-	// if dataLogin == nil {
-	// 	return nil, errors.New("unauthorized")
-	// } else {
-	// 	convId := ctx.Value("EchoContextKey")
-	// 	fmt.Println("id user", convId)
-	// }
-	panic(fmt.Errorf("not implemented"))
+	dataLogin := ctx.Value("EchoContextKey")
+	if dataLogin == nil {
+		return nil, errors.New("unauthorized")
+	}
+	loginId := dataLogin.(int)
+	err := r.participantRepo.CreateParticipant(eventID, loginId)
+	if err != nil {
+		return nil, err
+	}
+
+	var response model.SuccessResponse
+	response.Code = 200
+	response.Message = "berhasil menambah participant"
+	return &response, nil
 }
 
 func (r *mutationResolver) DeleteParticipant(ctx context.Context, eventID int) (*model.SuccessResponse, error) {
-	// dataLogin := ctx.Value("EchoContextKey")
-	// if dataLogin == nil {
-	// 	return nil, errors.New("unauthorized")
-	// } else {
-	// 	convId := ctx.Value("EchoContextKey")
-	// 	fmt.Println("id user", convId)
-	// }
-	panic(fmt.Errorf("not implemented"))
+	dataLogin := ctx.Value("EchoContextKey")
+	if dataLogin == nil {
+		return nil, errors.New("unauthorized")
+	}
+	loginId := dataLogin.(int)
+	err := r.participantRepo.DeleteParticipant(eventID, loginId)
+	if err != nil {
+		return nil, err
+	}
+
+	var response model.SuccessResponse
+	response.Code = 200
+	response.Message = "berhasil menghapus participant"
+	return &response, nil
 }
 
 func (r *mutationResolver) CreateComment(ctx context.Context, eventID int, comment string) (*model.SuccessResponse, error) {
@@ -83,13 +95,11 @@ func (r *mutationResolver) DeleteComment(ctx context.Context, commentID int, eve
 	dataLogin := ctx.Value("EchoContextKey")
 	if dataLogin == nil {
 		return nil, errors.New("unauthorized")
-	} else {
-		convId := ctx.Value("EchoContextKey")
-		fmt.Println("id user", convId)
 	}
-	err := r.commentRepo.DeleteComment(eventID, commentID)
+	loginId := dataLogin.(int)
+	err := r.commentRepo.DeleteComment(eventID, commentID, loginId)
 	if err != nil {
-		return nil, fmt.Errorf("user not found")
+		return nil, fmt.Errorf("comment not found")
 	}
 	var response model.SuccessResponse
 	response.Code = 200
