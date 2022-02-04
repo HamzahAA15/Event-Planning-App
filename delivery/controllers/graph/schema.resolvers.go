@@ -70,8 +70,72 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id int, edit model.Ne
 	return &response, nil
 }
 
-func (r *queryResolver) Login(ctx context.Context, email string, password string) (*model.LoginResponse, error) {
+func (r *mutationResolver) CreateEvent(ctx context.Context, input model.NewEvent) (*model.SuccessResponse, error) {
+	var event entities.Event
+	event.UserID = input.UserID
+	event.CategoryId = input.CategoryID
+	event.Title = input.Title
+	event.Host = input.Host
+	event.Date = input.Date
+	event.Location = input.Location
+	event.Description = input.Description
+	event.ImageUrl = *input.ImageURL
 
+	_, err := r.eventRepo.CreateEvent(event)
+	if err != nil {
+		return nil, err
+	}
+
+	response := model.SuccessResponse{
+		Code:    200,
+		Message: "berhasil membuat event",
+	}
+	return &response, nil
+}
+
+func (r *mutationResolver) UpdateEvent(ctx context.Context, eventID int, edit model.EditEvent) (*model.SuccessResponse, error) {
+	event, err := r.eventRepo.GetEvent(eventID)
+	if err != nil {
+		return nil, err
+	}
+	event.CategoryId = *edit.CategoryID
+	event.Title = *edit.Title
+	event.Host = *edit.Host
+	event.Date = *edit.Date
+	event.Location = *edit.Location
+	event.Description = *edit.Description
+	event.ImageUrl = *edit.ImageURL
+
+	_, err = r.eventRepo.UpdateEvent(event)
+	if err != nil {
+		return nil, err
+	}
+
+	response := model.SuccessResponse{
+		Code:    200,
+		Message: "berhasil meng-update event",
+	}
+	return &response, nil
+}
+
+func (r *mutationResolver) DeleteEvent(ctx context.Context, eventID int) (*model.SuccessResponse, error) {
+	event, err := r.eventRepo.GetEvent(eventID)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = r.eventRepo.DeleteEvent(event)
+	if err != nil {
+		return nil, err
+	}
+	response := model.SuccessResponse{
+		Code:    200,
+		Message: "berhasil menghapus event",
+	}
+	return &response, nil
+}
+
+func (r *queryResolver) Login(ctx context.Context, email string, password string) (*model.LoginResponse, error) {
 	hashedPass, _ := entities.HashPassword(password)
 	token, user, err := r.authRepo.Login(email, hashedPass)
 	if err != nil {
@@ -112,6 +176,39 @@ func (r *queryResolver) GetUsers(ctx context.Context) ([]*model.User, error) {
 	}
 
 	return userResponseData, nil
+}
+
+func (r *queryResolver) GetEvents(ctx context.Context) ([]*model.Event, error) {
+	responseData, err := r.eventRepo.GetEvents()
+	if err != nil {
+		return nil, err
+	}
+
+	eventResponseData := []*model.Event{}
+
+	for _, val := range responseData {
+		eventResponseData = append(eventResponseData, &model.Event{ID: &val.Id, UserID: val.UserID, CategoryID: val.CategoryId, Title: val.Title, Host: val.Host, Date: val.Date, Location: val.Location, Description: val.Description, ImageURL: &val.ImageUrl})
+	}
+	return eventResponseData, nil
+}
+
+func (r *queryResolver) GetEvent(ctx context.Context, eventID int) (*model.Event, error) {
+	responseData, err := r.eventRepo.GetEvent(eventID)
+	if err != nil {
+		return nil, err
+	}
+	modelData := model.Event{
+		ID:          &responseData.Id,
+		UserID:      responseData.UserID,
+		CategoryID:  responseData.CategoryId,
+		Title:       responseData.Title,
+		Host:        responseData.Host,
+		Date:        responseData.Date,
+		Location:    responseData.Location,
+		Description: responseData.Description,
+		ImageURL:    &responseData.ImageUrl,
+	}
+	return &modelData, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

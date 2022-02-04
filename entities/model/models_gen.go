@@ -2,11 +2,44 @@
 
 package model
 
+type EditEvent struct {
+	CategoryID  *int    `json:"categoryId"`
+	Title       *string `json:"title"`
+	Host        *string `json:"host"`
+	Date        *string `json:"date"`
+	Location    *string `json:"location"`
+	Description *string `json:"description"`
+	ImageURL    *string `json:"imageUrl"`
+}
+
+type Event struct {
+	ID          *int    `json:"id"`
+	UserID      int     `json:"userId"`
+	CategoryID  int     `json:"categoryId"`
+	Title       string  `json:"title"`
+	Host        string  `json:"host"`
+	Date        string  `json:"date"`
+	Location    string  `json:"location"`
+	Description string  `json:"description"`
+	ImageURL    *string `json:"imageUrl"`
+}
+
 type LoginResponse struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 	Token   string `json:"token"`
 	User    *User  `json:"User"`
+}
+
+type NewEvent struct {
+	UserID      int     `json:"userId"`
+	CategoryID  int     `json:"categoryId"`
+	Title       string  `json:"title"`
+	Host        string  `json:"host"`
+	Date        string  `json:"date"`
+	Location    string  `json:"location"`
+	Description string  `json:"description"`
+	ImageURL    *string `json:"imageUrl"`
 }
 
 type NewUser struct {

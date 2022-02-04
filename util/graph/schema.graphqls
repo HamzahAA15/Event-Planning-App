@@ -21,9 +21,23 @@ type LoginResponse {
   User: User!
 }
 
+type Event {
+  id: Int
+  userId: Int!
+  categoryId: Int!
+  title: String!
+  host: String!
+  date: String!
+  location: String!
+  description: String!
+  imageUrl: String
+}
+
 type Query {
   login(email: String!, password: String!): LoginResponse!
   getUsers: [User!]
+  getEvents: [Event!]
+  getEvent(eventId: Int!): Event!
 }
 
 input NewUser {
@@ -32,9 +46,33 @@ input NewUser {
   password: String!
 }
 
+input NewEvent {
+  userId: Int!
+  categoryId: Int!
+  title: String!
+  host: String!
+  date: String!
+  location: String!
+  description: String!
+  imageUrl: String
+}
+
+input EditEvent {
+  categoryId: Int
+  title: String
+  host: String
+  date: String
+  location: String
+  description: String
+  imageUrl: String
+}
+
 type Mutation {
   createUser(input: NewUser!): SuccessResponse!
   deleteUser(id: Int!): SuccessResponse!
   updateUser(id: Int!, edit: NewUser!): SuccessResponse!
+  createEvent(input: NewEvent!): SuccessResponse!
+  updateEvent(eventId: Int!, edit: EditEvent!): SuccessResponse!
+  deleteEvent(eventId: Int!): SuccessResponse!
 }
 scalar Time
