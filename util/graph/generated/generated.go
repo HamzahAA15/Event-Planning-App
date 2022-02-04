@@ -471,7 +471,7 @@ type LoginResponse {
 type Comment {
   id: Int!
   comment: String!
-  user: User!
+  user: User
 }
 
 type Query {
@@ -887,14 +887,11 @@ func (ec *executionContext) _Comment_user(ctx context.Context, field graphql.Col
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(*model.User)
 	fc.Result = res
-	return ec.marshalNUser2ᚖsircloᚋentitiesᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalOUser2ᚖsircloᚋentitiesᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _LoginResponse_code(ctx context.Context, field graphql.CollectedField, obj *model.LoginResponse) (ret graphql.Marshaler) {
@@ -3165,9 +3162,6 @@ func (ec *executionContext) _Comment(ctx context.Context, sel ast.SelectionSet, 
 
 			out.Values[i] = innerFunc(ctx)
 
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4562,6 +4556,13 @@ func (ec *executionContext) marshalOUser2ᚕᚖsircloᚋentitiesᚋmodelᚐUser�
 	}
 
 	return ret
+}
+
+func (ec *executionContext) marshalOUser2ᚖsircloᚋentitiesᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._User(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

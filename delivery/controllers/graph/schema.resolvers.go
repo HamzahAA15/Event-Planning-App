@@ -13,25 +13,37 @@ import (
 )
 
 func (r *mutationResolver) CreateParticipant(ctx context.Context, eventID int) (*model.SuccessResponse, error) {
-	// dataLogin := ctx.Value("EchoContextKey")
-	// if dataLogin == nil {
-	// 	return nil, errors.New("unauthorized")
-	// } else {
-	// 	convId := ctx.Value("EchoContextKey")
-	// 	fmt.Println("id user", convId)
-	// }
-	panic(fmt.Errorf("not implemented"))
+	dataLogin := ctx.Value("EchoContextKey")
+	if dataLogin == nil {
+		return nil, errors.New("unauthorized")
+	}
+	loginId := dataLogin.(int)
+	err := r.participantRepo.CreateParticipant(eventID, loginId)
+	if err != nil {
+		return nil, err
+	}
+
+	var response model.SuccessResponse
+	response.Code = 200
+	response.Message = "berhasil menambah participant"
+	return &response, nil
 }
 
 func (r *mutationResolver) DeleteParticipant(ctx context.Context, eventID int) (*model.SuccessResponse, error) {
-	// dataLogin := ctx.Value("EchoContextKey")
-	// if dataLogin == nil {
-	// 	return nil, errors.New("unauthorized")
-	// } else {
-	// 	convId := ctx.Value("EchoContextKey")
-	// 	fmt.Println("id user", convId)
-	// }
-	panic(fmt.Errorf("not implemented"))
+	dataLogin := ctx.Value("EchoContextKey")
+	if dataLogin == nil {
+		return nil, errors.New("unauthorized")
+	}
+	loginId := dataLogin.(int)
+	err := r.participantRepo.DeleteParticipant(eventID, loginId)
+	if err != nil {
+		return nil, err
+	}
+
+	var response model.SuccessResponse
+	response.Code = 200
+	response.Message = "berhasil menghapus participant"
+	return &response, nil
 }
 
 func (r *mutationResolver) CreateComment(ctx context.Context, eventID int, comment string) (*model.SuccessResponse, error) {
@@ -83,13 +95,11 @@ func (r *mutationResolver) DeleteComment(ctx context.Context, commentID int, eve
 	dataLogin := ctx.Value("EchoContextKey")
 	if dataLogin == nil {
 		return nil, errors.New("unauthorized")
-	} else {
-		convId := ctx.Value("EchoContextKey")
-		fmt.Println("id user", convId)
 	}
-	err := r.commentRepo.DeleteComment(eventID, commentID)
+	loginId := dataLogin.(int)
+	err := r.commentRepo.DeleteComment(eventID, commentID, loginId)
 	if err != nil {
-		return nil, fmt.Errorf("user not found")
+		return nil, fmt.Errorf("comment not found")
 	}
 	var response model.SuccessResponse
 	response.Code = 200
@@ -179,10 +189,10 @@ func (r *queryResolver) Login(ctx context.Context, email string, password string
 }
 
 func (r *queryResolver) GetUsers(ctx context.Context) ([]*model.User, error) {
-	// dataLogin := ctx.Value("EchoContextKey")
-	// if dataLogin == nil {
-	// 	return nil, errors.New("unauthorized")
-	// }
+	dataLogin := ctx.Value("EchoContextKey")
+	if dataLogin == nil {
+		return nil, errors.New("unauthorized")
+	}
 
 	responseData, err := r.userRepo.GetUsers()
 
@@ -194,7 +204,7 @@ func (r *queryResolver) GetUsers(ctx context.Context) ([]*model.User, error) {
 
 	for _, v := range responseData {
 		theId := int(v.Id)
-		userResponseData = append(userResponseData, &model.User{ID: &theId, Name: v.Name, Email: v.Email, Password: v.Password})
+		userResponseData = append(userResponseData, &model.User{ID: &theId, Name: v.Name, Email: v.Email, Image: &v.ImageUrl})
 	}
 
 	return userResponseData, nil
@@ -212,14 +222,25 @@ func (r *queryResolver) GetUser(ctx context.Context, userID int) (*model.User, e
 }
 
 func (r *queryResolver) GetParticipants(ctx context.Context, eventID int) ([]*model.User, error) {
-	// dataLogin := ctx.Value("EchoContextKey")
-	// if dataLogin == nil {
-	// 	return nil, errors.New("unauthorized")
-	// } else {
-	// 	convId := ctx.Value("EchoContextKey")
-	// 	fmt.Println("id user", convId)
-	// }
-	panic(fmt.Errorf("not implemented"))
+	dataLogin := ctx.Value("EchoContextKey")
+	if dataLogin == nil {
+		return nil, errors.New("unauthorized")
+	}
+
+	responseData, err := r.participantRepo.GetParticipants(eventID)
+
+	if err != nil {
+		return nil, errors.New("not found")
+	}
+
+	userResponseData := []*model.User{}
+
+	for _, v := range responseData {
+		theId := int(v.Id)
+		userResponseData = append(userResponseData, &model.User{ID: &theId, Name: v.Name, Email: v.Email, Image: &v.ImageUrl})
+	}
+
+	return userResponseData, nil
 }
 
 func (r *queryResolver) GetComments(ctx context.Context, eventID int) ([]*model.Comment, error) {
